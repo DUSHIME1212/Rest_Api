@@ -1,11 +1,12 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InventoryItemUI : MonoBehaviour
 {
-    [SerializeField] private Text itemNameText;
-    [SerializeField] private Text quantityText;
-    [SerializeField] private Text weightText;
+    [SerializeField] private TextMeshProUGUI itemNameText;
+    [SerializeField] private TextMeshProUGUI quantityText;
+    [SerializeField] private TextMeshProUGUI weightText;
     [SerializeField] private Image backgroundImage;
     
     public void Setup(InventoryItem item)
@@ -14,7 +15,6 @@ public class InventoryItemUI : MonoBehaviour
         quantityText.text = $"Qty: {item.quantity}";
         weightText.text = $"Weight: {item.weight}";
         
-        // Visual feedback based on weight
         backgroundImage.color = GetWeightColor(item.weight);
     }
     

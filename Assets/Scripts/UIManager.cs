@@ -1,27 +1,26 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro; // Add this for TextMeshPro
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using System.Globalization;
-using TMPro;
 
 public class UIManager : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] public Canvas mainCanvas;
-    [SerializeField] public TextMeshPro playerNameText;
-    [SerializeField] public TextMeshPro levelText;
-    [SerializeField] public Slider healthSlider;
-    [SerializeField] public TextMeshPro healthText;
-    [SerializeField] public TextMeshPro positionText;
-    [SerializeField] public Transform inventoryContent;
-    [SerializeField] public GameObject inventoryItemPrefab;
-    [SerializeField] public TextMeshPro metadataText;
-    [SerializeField] public Button refreshButton;
-    [SerializeField] public Dropdown sortDropdown;
-    [SerializeField] public GameObject loadingPanel;
-    [SerializeField] public TextMeshPro errorText;
+    [SerializeField] private Canvas mainCanvas;
+    [SerializeField] private TextMeshProUGUI playerNameText; // Changed from Text to TextMeshProUGUI
+    [SerializeField] private TextMeshProUGUI levelText;      // Changed from Text to TextMeshProUGUI
+    [SerializeField] private Slider healthSlider;
+    [SerializeField] private TextMeshProUGUI healthText;     // Changed from Text to TextMeshProUGUI
+    [SerializeField] private TextMeshProUGUI positionText;   // Changed from Text to TextMeshProUGUI
+    [SerializeField] private Transform inventoryContent;
+    [SerializeField] private GameObject inventoryItemPrefab;
+    [SerializeField] private TextMeshProUGUI metadataText;   // Changed from Text to TextMeshProUGUI
+    [SerializeField] private Button refreshButton;
+    [SerializeField] private TMP_Dropdown sortDropdown;      // Changed from Dropdown to TMP_Dropdown
+    [SerializeField] private GameObject loadingPanel;
+    [SerializeField] private TextMeshProUGUI errorText;      // Changed from Text to TextMeshProUGUI
     
     private List<InventoryItem> currentInventory;
     
@@ -67,21 +66,93 @@ public class UIManager : MonoBehaviour
     }
     
     private void DisplayInventory(List<InventoryItem> inventory)
+{
+    try
     {
+        if (inventory == null)
+        {
+            Debug.LogError("Inventory list is null!");
+            return;
+        }
+
+        if (inventoryItemPrefab == null)
+        {
+            Debug.LogError("Inventory Item Prefab is not assigned!");
+            return;
+        }
+        
+        if (inventoryContent == null)
+        {
+            Debug.LogError("Inventory Content is not assigned!");
+            return;
+        }
+
         // Clear existing items
         foreach (Transform child in inventoryContent)
         {
-            Destroy(child.gameObject);
+            if (child != null && child.gameObject != null)
+            {
+                Destroy(child.gameObject);
+            }
         }
         
         // Create new items
         foreach (var item in inventory)
         {
-            GameObject itemGO = Instantiate(inventoryItemPrefab, inventoryContent);
-            InventoryItemUI itemUI = itemGO.GetComponent<InventoryItemUI>();
-            itemUI.Setup(item);
+            if (item == null) continue;
+            
+            try
+            {
+                GameObject itemGO = Instantiate(inventoryItemPrefab, inventoryContent);
+                if (itemGO == null)
+                {
+                    Debug.LogError("Failed to instantiate inventory item prefab");
+                    continue;
+                }
+                
+                var itemUI = itemGO.GetComponent<InventoryItemUI>();
+                if (itemUI != null)
+                {
+                    itemUI.Setup(item);
+                }
+                else
+                {
+                    // Fallback: Create basic UI manually
+                    Debug.LogWarning("InventoryItemUI component not found, creating basic UI");
+                    CreateBasicInventoryUI(itemGO, item);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error creating inventory item: {ex.Message}");
+            }
         }
     }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Error in DisplayInventory: {ex}");
+        ShowError($"Error displaying inventory: {ex.Message}");
+    }
+}
+
+// Fallback method if InventoryItemUI component is missing
+private void CreateBasicInventoryUI(GameObject itemGO, InventoryItem item)
+{
+    // Look for TextMeshPro components in children
+    TextMeshProUGUI[] texts = itemGO.GetComponentsInChildren<TextMeshProUGUI>();
+    
+    if (texts.Length >= 3)
+    {
+        texts[0].text = item.itemName;
+        texts[1].text = $"Qty: {item.quantity}";
+        texts[2].text = $"Weight: {item.weight}";
+    }
+    else
+    {
+        // Last resort: log the item data
+        Debug.Log($"Item: {item.itemName}, Qty: {item.quantity}, Weight: {item.weight}");
+    }
+}
     
     private void OnSortChanged(int sortIndex)
     {
@@ -118,14 +189,13 @@ public class UIManager : MonoBehaviour
                 DisplayPlayerData,
                 error => 
                 {
-                    Debug.LogError($"Error fetching player data: {error}");
+                    Debug.Log($"Error fetching player data: {error}");
                     ShowError($"Failed to load data: {error}");
                 }
             );
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Error in LoadPlayerData: {ex}");
             ShowError($"Error: {ex.Message}");
             HideLoading();
         }

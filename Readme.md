@@ -63,8 +63,26 @@ A Unity application that fetches and displays player data from a JSON API, featu
 - TextMeshPro (included in Unity)
 - Newtonsoft.Json (for JSON parsing)
 
+# challenges 
+
 ## Troubleshooting
 
 - **Missing UI References**: Ensure all UI elements are assigned in the Unity Inspector
 - **Network Issues**: Verify internet connection and API endpoint
 - **Empty Inventory**: Check the JSON data structure matches the expected format
+
+### 1. Data Fetching & Parsing
+- **Challenge**: Handling asynchronous API calls and JSON parsing
+- **Solution**: Implemented coroutines with error handling and proper state management
+
+### 2. Dynamic UI Updates
+- **Challenge**: Updating UI elements when data changes
+- **Solution**: Used Unity's event system to decouple data updates from UI rendering
+
+### 3. Inventory Sorting
+- **Challenge**: Implementing multiple sort options
+- **Solution**: Created a flexible sorting system using LINQ and a switch statement
+
+### 4. Error Handling
+- **Challenge**: Graceful handling of network issues and malformed data
+- **Solution**: Comprehensive try-catch blocks and user-friendly error messages

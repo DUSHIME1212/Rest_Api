@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // Add this for TextMeshPro
+using TMPro; 
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -9,18 +9,18 @@ public class UIManager : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private Canvas mainCanvas;
-    [SerializeField] private TextMeshProUGUI playerNameText; // Changed from Text to TextMeshProUGUI
-    [SerializeField] private TextMeshProUGUI levelText;      // Changed from Text to TextMeshProUGUI
+    [SerializeField] private TextMeshProUGUI playerNameText; 
+    [SerializeField] private TextMeshProUGUI levelText;      
     [SerializeField] private Slider healthSlider;
-    [SerializeField] private TextMeshProUGUI healthText;     // Changed from Text to TextMeshProUGUI
-    [SerializeField] private TextMeshProUGUI positionText;   // Changed from Text to TextMeshProUGUI
+    [SerializeField] private TextMeshProUGUI healthText;     
+    [SerializeField] private TextMeshProUGUI positionText;   
     [SerializeField] private Transform inventoryContent;
     [SerializeField] private GameObject inventoryItemPrefab;
-    [SerializeField] private TextMeshProUGUI metadataText;   // Changed from Text to TextMeshProUGUI
+    [SerializeField] private TextMeshProUGUI metadataText;   
     [SerializeField] private Button refreshButton;
-    [SerializeField] private TMP_Dropdown sortDropdown;      // Changed from Dropdown to TMP_Dropdown
+    [SerializeField] private TMP_Dropdown sortDropdown;      
     [SerializeField] private GameObject loadingPanel;
-    [SerializeField] private TextMeshProUGUI errorText;      // Changed from Text to TextMeshProUGUI
+    [SerializeField] private TextMeshProUGUI errorText;      
     
     private List<InventoryItem> currentInventory;
     
@@ -35,7 +35,7 @@ public class UIManager : MonoBehaviour
             sortDropdown.onValueChanged.AddListener(OnSortChanged);
         }
     
-        // Initial data load
+        
         LoadPlayerData();
     }
     
@@ -43,22 +43,22 @@ public class UIManager : MonoBehaviour
     {
         if (data == null) return;
         
-        // Basic player info
+        
         playerNameText.text = $"Player: {data.record.playerName}";
         levelText.text = $"Level: {data.record.level}";
         
-        // Health with slider
+        
         healthSlider.value = data.record.health / 100f;
         healthText.text = $"Health: {data.record.health}%";
         
-        // Position
+        
         positionText.text = $"Position: ({data.record.position.x}, {data.record.position.y}, {data.record.position.z})";
         
-        // Inventory
+        
         currentInventory = data.record.inventory;
         DisplayInventory(currentInventory);
         
-        // Metadata
+        
         metadataText.text = $"Created: {System.DateTime.Parse(data.metadata.createdAt).ToString("MMM dd, yyyy HH:mm")}";
         
         HideLoading();
@@ -87,7 +87,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        // Clear existing items
+        
         foreach (Transform child in inventoryContent)
         {
             if (child != null && child.gameObject != null)
@@ -96,7 +96,7 @@ public class UIManager : MonoBehaviour
             }
         }
         
-        // Create new items
+        
         foreach (var item in inventory)
         {
             if (item == null) continue;
@@ -117,7 +117,7 @@ public class UIManager : MonoBehaviour
                 }
                 else
                 {
-                    // Fallback: Create basic UI manually
+                    
                     Debug.LogWarning("InventoryItemUI component not found, creating basic UI");
                     CreateBasicInventoryUI(itemGO, item);
                 }
@@ -135,10 +135,10 @@ public class UIManager : MonoBehaviour
     }
 }
 
-// Fallback method if InventoryItemUI component is missing
+
 private void CreateBasicInventoryUI(GameObject itemGO, InventoryItem item)
 {
-    // Look for TextMeshPro components in children
+    
     TextMeshProUGUI[] texts = itemGO.GetComponentsInChildren<TextMeshProUGUI>();
     
     if (texts.Length >= 3)
@@ -149,7 +149,7 @@ private void CreateBasicInventoryUI(GameObject itemGO, InventoryItem item)
     }
     else
     {
-        // Last resort: log the item data
+        
         Debug.Log($"Item: {item.itemName}, Qty: {item.quantity}, Weight: {item.weight}");
     }
 }
